@@ -23,12 +23,40 @@ Both of them may be imported by Anki.
 To import text file you will need to create a card with fields and deck
 ``.apkg`` may be imported without extra actions.
 
-See help::
+You may use it without install like::
+
+    python -m anki_deck.cli ....
+    
+Or install with ``setyp.py`` and use::
+
+    anki_deck ...
+
+Usage::
+    
+    # To generate flashcards text file
+    anki_deck -d /<path>/<to>/dict.xdxf -a /<path>/<to>/audio -w mywords.txt txt
+    
+    # To generate a deck
+    anki_deck -d /<path>/<to>/dict.xdxf -a /<path>/<to>/audio -w mywords.txt deck MyDeck  # or MyDeck.apkg
+    anki_deck -d /<path>/<to>/dict.xdxf -a /<path>/<to>/audio -w mywords.txt deck MyDeck -n "Deck name"
+    
+If you put dict and audio in a directory with structure::
+
+    dictdata/
+      audio/
+      dict.xdxf
+      
+then you may use::
+
+    anki_deck -i /<path>/<to>/dictdata -w mywords.txt ...
+
+Also if words file is named ``words.txt`` you may skip ``-w``::
+
+    anki_deck -i /<path>/<to>/dictdata ...
+
+See help for all options::
 
     anki_deck -h
-    anki_deck txt -h
-    anki_deck deck -h
-
 
 Notes
 -----
