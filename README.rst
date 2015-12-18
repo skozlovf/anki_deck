@@ -25,8 +25,8 @@ To import text file you will need to create a card with fields and deck
 
 See help::
 
-    anki_card -h
-    anki_card txt -h
+    anki_deck -h
+    anki_deck txt -h
 
 
 Notes
