@@ -27,6 +27,7 @@ See help::
 
     anki_deck -h
     anki_deck txt -h
+    anki_deck deck -h
 
 
 Notes
