@@ -231,9 +231,16 @@ DECK = {
 # -- Deck configs done ---------------------------------------------------------
 
 
-def _guid(lenght):
-    """Generate random GUID with the given `length`."""
-    return ''.join(random.choice(string.printable) for x in xrange(lenght))
+def _guid():
+    """Generate random base91 encoded 64bit number."""
+    t = string.ascii_letters + string.digits + "!#$%&()*+,-./:;<=>?@[]^_`{|}~"
+    size = len(t)
+    guid = ''
+    num = random.randint(0, 2**64-1)
+    while num:
+        num, i = divmod(num, size)
+        guid = t[i] + guid
+    return guid
 
 
 def card_to_flds(card):
@@ -363,7 +370,7 @@ class Deck(CardsHandler):
             # Put word with all required into to the DB record.
             vals = (
                 self.note_id,
-                _guid(10),
+                _guid(),
                 self.model_id,
                 self.epoch,
                 -1,
