@@ -9,6 +9,7 @@ Based on:
 :copyright: (c) 2015 by Sergey Kozlov
 :license: MIT, see LICENSE for more details.
 """
+import sys
 import os
 import os.path as op
 import shutil
@@ -21,6 +22,10 @@ import random
 import time
 from hashlib import sha1
 from .parser import CardsHandler
+
+
+if sys.version_info[0] > 2:
+    xrange = range
 
 # -- SQL commands --------------------------------------------------------------
 
@@ -123,7 +128,7 @@ def make_card_field(name, order):
     }
 
 
-LATEXPRE = """\documentclass[12pt]{article}
+LATEXPRE = r"""\documentclass[12pt]{article}
 \special{papersize=3in,5in}
 \usepackage[utf8]{inputenc}
 \usepackage{amssymb,amsmath}
@@ -132,9 +137,9 @@ LATEXPRE = """\documentclass[12pt]{article}
 \begin{document}
 """
 
-LATEXPOST = """\end{document}"""
+LATEXPOST = r"""\end{document}"""
 
-CSS = """.card {
+CSS = r""".card {
   font-family: arial;
   font-size: 20px;
   text-align: center;
@@ -143,14 +148,14 @@ CSS = """.card {
 }
 """
 
-FRONT_FMT = """{{Front}}
+FRONT_FMT = r"""{{Front}}
 <br>
 {{Transcription}}
 <br>
 {{Sound}}
 """
 
-BACK_FMT = """{{FrontSide}}
+BACK_FMT = r"""{{FrontSide}}
 <hr id=answer>
 {{Back}}
 """
@@ -251,7 +256,7 @@ class Deck(CardsHandler):
     """This class creates Anki `apkg` file."""
     def __init__(self, filename, sound_path, name):
         self.sound_path = sound_path
-        self.outpath = tempfile.mkdtemp(prefix='anki_deck_')
+        self.outpath = tempfile.mkdtemp(prefix='anki_deck_', )
         self.filename = filename
 
         self.cursor = None
@@ -268,10 +273,15 @@ class Deck(CardsHandler):
         self.note_id_start = self.deck_id + 1
         self.note_id = self.note_id_start
 
+    def _run_sql(self, sql_list):
+        for sql in sql_list:
+            self.cursor.execute(sql)
+
     # Setup DB, create tables and set initial metadata.
     def _prepare_db(self):
         self.conn = sqlite3.connect(op.join(self.outpath, 'collection.anki2'))
-        map(self.conn.cursor().execute, TABLES)
+        self.cursor = self.conn.cursor()
+        self._run_sql(TABLES)
         self._set_metadata()
         self.conn.commit()
 
@@ -306,7 +316,6 @@ class Deck(CardsHandler):
             os.unlink(self.filename)
 
         self._prepare_db()
-        self.cursor = self.conn.cursor()
 
     def finish(self):
         # Save media info (about sound files which we copied in the handle().
@@ -325,7 +334,7 @@ class Deck(CardsHandler):
             gen)
 
         # Create required indexes.
-        map(self.conn.cursor().execute, INDEXES)
+        self._run_sql(INDEXES)
         self.conn.commit()
         self.conn.close()
 

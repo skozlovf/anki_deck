@@ -10,6 +10,10 @@ import codecs
 import logging
 from bs4 import BeautifulSoup
 
+if sys.version_info[0] == 2:
+    text_type = unicode
+else:
+    text_type = str
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +113,7 @@ def _xml_cleanup(card):
         while tag.parent.name == 'blockquote':
             tag.parent.unwrap()
 
-    return unicode(soup).replace('\n', ' ')
+    return text_type(soup).replace('\n', ' ')
 
 
 def parse_cards(word_list, dict_file, sound_path):
