@@ -19,8 +19,7 @@ To use ``anki_deck`` you need the following data:
 * Audio samples (optional) in ``.ogg`` format.
 
 ``anki_deck`` can create plain text flashcards file or ``.apkg`` deck.
-Both of them may be imported by Anki.
-To import text file you will need to create a card with fields and deck
+Both of them may be imported by Anki. To import text file you will need to create a card with fields and deck
 ``.apkg`` may be imported without extra actions.
 
 You may use it without install like::
@@ -57,6 +56,35 @@ Also if words file is named ``words.txt`` you may skip ``-w``::
 See help for all options::
 
     anki_deck -h
+
+Text flashcards
+---------------
+
+Text flashcards format::
+
+  <word> <translations> <transcription> <sound>
+  
+To import flashcards file create card with fields:
+
+  * Front
+  * Back
+  * Transcription
+  * Sound
+
+Front Template::
+
+    {{Front}}
+    <br>
+    {{Transcription}}
+    <br>
+    {{Sound}}
+
+Back Template::
+
+    {{FrontSide}}
+    <hr id=answer>
+    {{Back}}
+
 
 Notes
 -----
