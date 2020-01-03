@@ -8,12 +8,14 @@ import sys
 import os.path as op
 import logging
 import click
+from anki_deck import __version__
 from anki_deck.apkg import Deck
 from anki_deck.flashcards import FlashcardsWriter
 from anki_deck.parser import get_cards
 
 
 @click.group(context_settings=dict(help_option_names=['-h', '--help']))
+@click.version_option(version=__version__, message='%(version)s')
 @click.option('--input-dir', '-i',
               help="Input data dir with 'dict.xdxf' and 'audio/'.")
 @click.option('--dict', '-d',  help='Dictionary file in xdxf format.')
