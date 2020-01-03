@@ -8,6 +8,8 @@ import sys
 import os.path as op
 import logging
 import click
+from anki_deck.apkg import Deck
+from anki_deck.flashcards import FlashcardsWriter
 from anki_deck.parser import get_cards
 
 
@@ -42,7 +44,6 @@ def run(ctx, input_dir, dict, audio, words):
 @click.pass_context
 def txt(ctx, out):
     """Generate text flashcards file."""
-    from anki_deck.flashcards import FlashcardsWriter
     handler = FlashcardsWriter(out)
     get_cards(ctx.meta['words'], ctx.meta['dict'], ctx.meta['audio'], handler)
 
@@ -64,7 +65,6 @@ def deck(ctx, deck_name, out):
     if deck_name is None:
         deck_name = name
 
-    from anki_deck.apkg import Deck
     handler = Deck(out, ctx.meta['audio'], deck_name)
     get_cards(ctx.meta['words'], ctx.meta['dict'], ctx.meta['audio'], handler)
 
