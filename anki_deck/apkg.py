@@ -359,34 +359,34 @@ class Deck(CardsHandler):
             pass
 
     def handle(self, card):
-        if card.sound:
-            # Map sound file to a number and copy it to the temp dir.
-            index = len(self.media)
-            self.media[index] = card.sound
+        if self.sound_path and card.sound:
+            src_sound = op.join(self.sound_path, card.sound)
+            if op.exists(src_sound):
+                # Map sound file to a number and copy it to the temp dir.
+                index = len(self.media)
+                self.media[index] = card.sound
+                shutil.copy(src_sound, op.join(self.outpath, str(index)))
 
-            shutil.copy(op.join(self.sound_path, card.sound),
-                        op.join(self.outpath, str(index)))
+        # Put word with all required into to the DB record.
+        vals = (
+            self.note_id,
+            _guid(),
+            self.model_id,
+            self.epoch,
+            -1,
+            '',
+            card_to_flds(card),
+            card.word,
+            checksum(card.word),
+            0,
+            ''
+        )
 
-            # Put word with all required into to the DB record.
-            vals = (
-                self.note_id,
-                _guid(),
-                self.model_id,
-                self.epoch,
-                -1,
-                '',
-                card_to_flds(card),
-                card.word,
-                checksum(card.word),
-                0,
-                ''
-            )
+        # id,guid,mid,mod,usn,tags,flds,sfld,csum,flags,data
+        self.cursor.execute(
+            "INSERT INTO notes VALUES (?,?,?,?,?,?,?,?,?,?,?)", vals)
 
-            # id,guid,mid,mod,usn,tags,flds,sfld,csum,flags,data
-            self.cursor.execute(
-                "INSERT INTO notes VALUES (?,?,?,?,?,?,?,?,?,?,?)", vals)
-
-            # This id is used as unique id for all records in the notes table
-            # and later for IDs for records in cards table, see finish().
-            self.note_id += 1
+        # This id is used as unique id for all records in the notes table
+        # and later for IDs for records in cards table, see finish().
+        self.note_id += 1
 

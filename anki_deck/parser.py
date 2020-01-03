@@ -116,13 +116,12 @@ def _xml_cleanup(card):
     return text_type(soup).replace('\n', ' ')
 
 
-def parse_cards(word_list, dict_file, sound_path):
+def parse_cards(word_list, dict_file):
     """Yields a Card for each word in the `word_list`.
 
     Args:
         word_list: List of words for which return cards.
         dict_file: Filename of the dict in the xdxf format.
-        sound_path: Path to dir with ogg audio files with names `<word>.ogg`.
 
     Returns:
         Card object.
@@ -174,20 +173,22 @@ def get_cards(words_file, dict_file, sound_path, card_handler):
     """
     try:
         with open(words_file, 'r') as words:
-            word_list = set(x.strip().lower() for x in words if x)
+            word_list = set(x.strip().lower() for x in words if x.strip())
 
         if not word_list:
             raise ParseError('Empty words file')
 
-        need_audio = op.exists(sound_path)
+        need_audio = op.exists(sound_path) if sound_path else False
         card_handler.start()
 
-        for card in parse_cards(word_list, dict_file, sound_path):
+        for card in parse_cards(word_list, dict_file):
             if need_audio:
                 path = op.join(sound_path, card.sound)
                 if not op.exists(path):
                     card.sound = None
-                    logger.warning("Missing sound %s" % path)
+                    logger.warning('Missing sound %s', path)
+            else:
+                card.sound = None
             card_handler.handle(card)
         card_handler.finish()
 
